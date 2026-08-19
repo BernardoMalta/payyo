@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payyo — pagamentos em lote via PIX</title>
+<meta name="description" content="O Payyo lê sua lista de pagamentos, você revisa uma vez e aprova em lote. Cada PIX sai pela sua própria conta Inter, com comprovante e log de auditoria por transação.">
+<meta property="og:title" content="Payyo — pagamentos em lote via PIX">
+<meta property="og:description" content="Pagamentos em lote. Simples, rápido, seguro.">
+<meta property="og:image" content="assets/logo-payyo.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/favicon.png">
+<style>
+  :root {
+    --paper: #F4F7F1;
+    --ink: #0B160F;
+    --ink-soft: #5B7568;
+    --panel: #FFFFFF;
+    --panel-line: #DCE6DE;
+    --green-500: #17B366;
+    --green-300: #59D690;
+    --green-800: #0B4A2A;
+
+    --mono: ui-monospace, "SFMono-Regular", "Consolas", "Liberation Mono", monospace;
+    --sans: "Century Gothic", "Avenir Next", "Segoe UI", Corbel, ui-sans-serif, sans-serif;
+    --body: "Charter", "Iowan Old Style", "Segoe UI", ui-sans-serif, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #0A120D;
+      --ink: #EAF3EC;
+      --ink-soft: #9DB5A7;
+      --panel: #0F1C14;
+      --panel-line: #203827;
+      --green-800: #B9F3CE;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--panel-line);
+  }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; padding-top: 18px; padding-bottom: 18px; }
+  .wordmark { font-family: var(--sans); font-weight: 700; font-size: 21px; }
+  .wordmark .pay { color: var(--ink); }
+  .wordmark .yo { color: var(--green-500); }
+  .nav-cta {
+    font-family: var(--mono);
+    font-size: 13px;
+    text-decoration: none;
+    padding: 9px 18px;
+    border: 1px solid var(--green-500);
+    border-radius: 3px;
+    color: var(--ink);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .nav-cta:hover { background: var(--green-500); color: #06170D; }
+
+  /* HERO */
+  .hero {
+    background: #060B07;
+    color: #EAF3EC;
+    padding: 88px 0 100px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: -20% -10% auto auto;
+    width: 620px; height: 620px;
+    background: radial-gradient(circle, rgba(23,179,102,0.28) 0%, rgba(23,179,102,0) 68%);
+    pointer-events: none;
+  }
+  .hero .wrap {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 56px;
+    align-items: center;
+    position: relative;
+  }
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #59D690;
+    margin: 0 0 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-eyebrow::before {
+    content: "";
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #59D690;
+    box-shadow: 0 0 0 4px rgba(89,214,144,0.18);
+  }
+  h1.hero-title {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: clamp(36px, 5vw, 58px);
+    line-height: 1.06;
+    letter-spacing: -0.015em;
+    margin: 0 0 24px;
+    text-wrap: balance;
+  }
+  .hero-title em { font-style: normal; color: #59D690; }
+  .hero-sub {
+    font-family: var(--body);
+    font-size: 19px;
+    color: #B9CFC1;
+    max-width: 46ch;
+    margin: 0 0 36px;
+  }
+  .hero-actions { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+  .btn-primary {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 16px;
+    text-decoration: none;
+    color: #06170D;
+    background: linear-gradient(135deg, #59D690, #17B366);
+    padding: 15px 28px;
+    border-radius: 3px;
+    display: inline-block;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 8px 24px -8px rgba(23,179,102,0.55);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 28px -8px rgba(23,179,102,0.7); }
+  .hero-actions .hint { font-family: var(--mono); font-size: 13px; color: #7C9186; }
+
+  .hero-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-visual img { width: 100%; max-width: 340px; height: auto; display: block; }
+
+  @media (max-width: 860px) {
+    .hero .wrap { grid-template-columns: 1fr; }
+    .hero-visual { order: -1; max-width: 220px; margin: 0 auto 12px; }
+  }
+
+  /* LEDGER STRIP */
+  .ledger {
+    background: #0C1710;
+    border-top: 1px solid #16281C;
+    border-bottom: 1px solid #16281C;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 14px 0;
+  }
+  .ledger-track {
+    display: inline-flex;
+    gap: 48px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: #6B8A76;
+    animation: scroll-ledger 32s linear infinite;
+    font-variant-numeric: tabular-nums;
+  }
+  @media (prefers-reduced-motion: reduce) { .ledger-track { animation: none; } }
+  .ledger-track span b { color: #59D690; font-weight: 500; }
+  @keyframes scroll-ledger {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* SECTIONS */
+  section { padding: 96px 0; }
+  .section-eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--green-500);
+    margin: 0 0 14px;
+  }
+  h2.section-title {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: clamp(28px, 3.4vw, 40px);
+    margin: 0 0 18px;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+  .section-sub {
+    color: var(--ink-soft);
+    font-size: 18px;
+    max-width: 56ch;
+    margin: 0;
+  }
+
+  /* PROBLEM */
+  .problem { background: var(--panel); border-top: 1px solid var(--panel-line); border-bottom: 1px solid var(--panel-line); }
+  .problem-grid {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--panel-line);
+    border: 1px solid var(--panel-line);
+  }
+  .problem-card { background: var(--panel); padding: 32px 28px; }
+  .problem-card .num { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); display: block; margin-bottom: 16px; }
+  .problem-card p.line { font-family: var(--sans); font-weight: 700; font-size: 18px; margin: 0 0 8px; }
+  .problem-card p.detail { color: var(--ink-soft); font-size: 15px; margin: 0; }
+  @media (max-width: 780px) { .problem-grid { grid-template-columns: 1fr; } }
+
+  /* HOW IT WORKS */
+  .how-list { margin-top: 48px; display: flex; flex-direction: column; }
+  .how-step {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 28px;
+    padding: 32px 0;
+    border-top: 1px solid var(--panel-line);
+  }
+  .how-step:last-child { border-bottom: 1px solid var(--panel-line); }
+  .how-step .step-mark { font-family: var(--mono); font-size: 14px; color: var(--green-500); padding-top: 4px; }
+  .how-step h3 { font-family: var(--sans); font-weight: 700; font-size: 21px; margin: 0 0 8px; }
+  .how-step p { color: var(--ink-soft); font-size: 16px; margin: 0; max-width: 58ch; }
+
+  /* TRUST */
+  .trust { background: #060B07; color: #EAF3EC; }
+  .trust .section-eyebrow { color: #59D690; }
+  .trust .section-sub { color: #9DB5A7; }
+  .trust-grid {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 28px;
+  }
+  .trust-item {
+    padding: 26px 0 0;
+    border-top: 1px solid #1E3327;
+  }
+  .trust-item .t-num {
+    font-family: var(--mono);
+    font-size: 30px;
+    color: #59D690;
+    font-variant-numeric: tabular-nums;
+    display: block;
+    margin-bottom: 10px;
+  }
+  .trust-item h4 { font-family: var(--sans); font-size: 16px; margin: 0 0 6px; }
+  .trust-item p { color: #7C9186; font-size: 14px; margin: 0; }
+
+  /* CTA */
+  .cta-panel {
+    background: linear-gradient(135deg, #0B4A2A, #17B366 65%, #59D690);
+    color: #06170D;
+    border-radius: 6px;
+    padding: 64px 56px;
+    display: grid;
+    grid-template-columns: 1.3fr 0.7fr;
+    gap: 40px;
+    align-items: center;
+  }
+  .cta-panel h2 { font-family: var(--sans); font-weight: 700; font-size: clamp(26px, 3.2vw, 36px); margin: 0 0 14px; text-wrap: balance; }
+  .cta-panel p { font-size: 17px; margin: 0; max-width: 44ch; opacity: 0.85; }
+  .cta-action { text-align: right; }
+  .btn-dark {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 16px;
+    text-decoration: none;
+    color: #EAF3EC;
+    background: #06170D;
+    padding: 16px 30px;
+    border-radius: 3px;
+    display: inline-block;
+    transition: transform 0.15s ease;
+  }
+  .btn-dark:hover { transform: translateY(-1px); }
+  .cta-action .hint { display: block; margin-top: 12px; font-family: var(--mono); font-size: 12px; opacity: 0.75; }
+  @media (max-width: 780px) {
+    .cta-panel { grid-template-columns: 1fr; padding: 40px 28px; }
+    .cta-action { text-align: left; }
+  }
+
+  footer.site-foot {
+    border-top: 1px solid var(--panel-line);
+    padding: 40px 0 56px;
+  }
+  footer.site-foot .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
+  footer.site-foot .foot-wordmark { font-size: 17px; }
+  footer.site-foot .foot-meta { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); }
+
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--green-500);
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <span class="wordmark"><span class="pay">pay</span><span class="yo">yo</span></span>
+    <a class="nav-cta" href="mailto:bernardomc294@gmail.com?subject=Quero%20ser%20piloto%20do%20Payyo">Quero ser piloto</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <p class="hero-eyebrow">pagamentos em lote via PIX</p>
+      <h1 class="hero-title">Pague sua folha inteira em <em>PIX</em>, não linha por linha.</h1>
+      <p class="hero-sub">O Payyo lê sua lista de pagamentos, você revisa uma vez e aprova em lote. Cada PIX sai individualmente pela sua própria conta Inter — com comprovante e log de auditoria por transação.</p>
+      <div class="hero-actions">
+        <a class="btn-primary" href="mailto:bernardomc294@gmail.com?subject=Quero%20ser%20piloto%20do%20Payyo">Quero ser piloto</a>
+        <span class="hint">vagas limitadas · sem custo no piloto</span>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <img src="assets/logo-payyo.jpg" alt="Payyo" width="340" height="340">
+    </div>
+  </div>
+</header>
+
+<div class="ledger" aria-hidden="true">
+  <div class="ledger-track">
+    <span>18:42:03 · lote #0392 · <b>R$ 14.220,00</b> · 47/47 enviados</span>
+    <span>09:07:41 · lote #0388 · <b>R$ 3.150,00</b> · 12/12 enviados</span>
+    <span>21:15:56 · lote #0381 · <b>R$ 22.840,00</b> · 63/63 enviados</span>
+    <span>14:33:09 · lote #0375 · <b>R$ 8.900,00</b> · 29/29 enviados</span>
+    <span>18:42:03 · lote #0392 · <b>R$ 14.220,00</b> · 47/47 enviados</span>
+    <span>09:07:41 · lote #0388 · <b>R$ 3.150,00</b> · 12/12 enviados</span>
+    <span>21:15:56 · lote #0381 · <b>R$ 22.840,00</b> · 63/63 enviados</span>
+    <span>14:33:09 · lote #0375 · <b>R$ 8.900,00</b> · 29/29 enviados</span>
+  </div>
+</div>
+
+<section class="problem">
+  <div class="wrap">
+    <p class="section-eyebrow">o problema de todo mês</p>
+    <h2 class="section-title">Pagamento em lote hoje é copiar chave, colar valor, repetir.</h2>
+    <p class="section-sub">Pequenas empresas e prestadoras pagam dezenas de pessoas por mês — no braço, um PIX de cada vez.</p>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <span class="num">01</span>
+        <p class="line">Erro de digitação vira dor de cabeça</p>
+        <p class="detail">Uma chave errada, um valor trocado — e agora é estorno, desculpa e retrabalho.</p>
+      </div>
+      <div class="problem-card">
+        <span class="num">02</span>
+        <p class="line">Ninguém sabe quem já recebeu</p>
+        <p class="detail">Planilha de controle desatualizada, comprovante espalhado em pasta de download.</p>
+      </div>
+      <div class="problem-card">
+        <span class="num">03</span>
+        <p class="line">Uma tarde inteira só nisso</p>
+        <p class="detail">Toda virada de mês, alguém do financeiro trava horas fazendo PIX manual.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how">
+  <div class="wrap">
+    <p class="section-eyebrow">como funciona</p>
+    <h2 class="section-title">Três passos, sem mudar de conta bancária.</h2>
+    <div class="how-list">
+      <div class="how-step">
+        <span class="step-mark">01</span>
+        <div>
+          <h3>Sobe a lista</h3>
+          <p>Importa a planilha com chave PIX, nome e valor — a mesma que você já usa hoje.</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <span class="step-mark">02</span>
+        <div>
+          <h3>Revisa e aprova</h3>
+          <p>Uma tela com todos os pagamentos do lote. Você confere os valores uma vez, não um por um.</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <span class="step-mark">03</span>
+        <div>
+          <h3>O lote sai sozinho</h3>
+          <p>O Payyo dispara cada PIX pela sua conta Inter e devolve comprovante e status de cada envio.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="trust">
+  <div class="wrap">
+    <p class="section-eyebrow">segurança, não promessa</p>
+    <h2 class="section-title">O dinheiro passa pela sua conta, nunca pela nossa.</h2>
+    <p class="section-sub">O Payyo conecta direto na sua conta Inter — não guardamos saldo, não intermediamos valor.</p>
+    <div class="trust-grid">
+      <div class="trust-item">
+        <span class="t-num">A→Z</span>
+        <h4>Credencial só sua, criptografada</h4>
+        <p>Cada cliente conecta a própria conta Inter. Nenhuma credencial é compartilhada entre contas.</p>
+      </div>
+      <div class="trust-item">
+        <span class="t-num">100%</span>
+        <h4>Log de auditoria por PIX</h4>
+        <p>Todo envio fica registrado — quem, quanto, quando e o status de confirmação.</p>
+      </div>
+      <div class="trust-item">
+        <span class="t-num">0</span>
+        <h4>Nenhum saldo guardado com a gente</h4>
+        <p>O Payyo dispara pagamentos. Ele não retém, não custodia, não movimenta fora da sua conta.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <div class="cta-panel">
+      <div>
+        <h2>Fase de piloto aberta.</h2>
+        <p>Estamos validando o Payyo com um punhado de pequenas empresas antes do lançamento público. Entra agora e ajuda a moldar o produto.</p>
+      </div>
+      <div class="cta-action">
+        <a class="btn-dark" href="mailto:bernardomc294@gmail.com?subject=Quero%20ser%20piloto%20do%20Payyo">Falar sobre o piloto</a>
+        <span class="hint">resposta em até 2 dias úteis</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <span class="wordmark foot-wordmark"><span class="pay">pay</span><span class="yo">yo</span></span>
+    <span class="foot-meta">pagamentos em lote · simples, rápido, seguro</span>
+  </div>
+</footer>
+
+</body>
+</html>
