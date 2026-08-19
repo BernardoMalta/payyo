@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Payyo — pagamentos em lote via PIX</title>
 <meta name="description" content="O Payyo lê sua lista de pagamentos, você revisa uma vez e aprova em lote. Cada PIX sai pela sua própria conta Inter, com comprovante e log de auditoria por transação.">
+<meta name="theme-color" content="#05100A">
 <meta property="og:title" content="Payyo — pagamentos em lote via PIX">
 <meta property="og:description" content="Pagamentos em lote. Simples, rápido, seguro.">
 <meta property="og:image" content="assets/logo-payyo.jpg">
@@ -12,450 +13,743 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --paper: #F4F7F1;
-    --ink: #0B160F;
-    --ink-soft: #5B7568;
-    --panel: #FFFFFF;
-    --panel-line: #DCE6DE;
-    --green-500: #17B366;
-    --green-300: #59D690;
-    --green-800: #0B4A2A;
+/* ─────────────────────────────────────────────
+   Payyo — design tokens
+   Marca comprometida com um visual só: fundo
+   escuro nas âncoras (nav, hero, segurança,
+   rodapé), claro no miolo de leitura.
+   ───────────────────────────────────────────── */
+:root {
+  --ink:        #05100A;
+  --ink-2:      #0A1A11;
+  --ink-3:      #102518;
+  --hairline:   #1A3524;
+  --paper:      #F6F8F4;
+  --paper-2:    #FFFFFF;
+  --paper-line: #DFE7DD;
 
-    --mono: ui-monospace, "SFMono-Regular", "Consolas", "Liberation Mono", monospace;
-    --sans: "Century Gothic", "Avenir Next", "Segoe UI", Corbel, ui-sans-serif, sans-serif;
-    --body: "Charter", "Iowan Old Style", "Segoe UI", ui-sans-serif, sans-serif;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --paper: #0A120D;
-      --ink: #EAF3EC;
-      --ink-soft: #9DB5A7;
-      --panel: #0F1C14;
-      --panel-line: #203827;
-      --green-800: #B9F3CE;
-    }
-  }
+  --green:      #12B76A;   /* acento sobre fundo escuro */
+  --green-ink:  #0A7A46;   /* mesmo acento legível sobre fundo claro (5.1:1) */
+  --green-lit:  #5CE08F;
+  --green-deep: #04321C;
 
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    background: var(--paper);
-    color: var(--ink);
-    font-family: var(--body);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
-  }
-  a { color: inherit; }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+  --on-dark:    #E9F2EA;
+  --on-dark-mid:#A9C1B1;
+  --on-dark-dim:#6E8A78;
+  --on-light:   #08150E;
+  --on-light-mid:#55705F;
 
-  @media (prefers-reduced-motion: reduce) {
-    * { animation: none !important; transition: none !important; }
-  }
+  --display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --body:    "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --mono:    "IBM Plex Mono", ui-monospace, monospace;
 
-  /* NAV */
-  nav {
-    position: sticky; top: 0; z-index: 10;
-    background: color-mix(in srgb, var(--paper) 88%, transparent);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--panel-line);
-  }
-  nav .wrap { display: flex; align-items: center; justify-content: space-between; padding-top: 18px; padding-bottom: 18px; }
-  .wordmark { font-family: var(--sans); font-weight: 700; font-size: 21px; }
-  .wordmark .pay { color: var(--ink); }
-  .wordmark .yo { color: var(--green-500); }
-  .nav-cta {
-    font-family: var(--mono);
-    font-size: 13px;
-    text-decoration: none;
-    padding: 9px 18px;
-    border: 1px solid var(--green-500);
-    border-radius: 3px;
-    color: var(--ink);
-    transition: background 0.15s ease, color 0.15s ease;
-  }
-  .nav-cta:hover { background: var(--green-500); color: #06170D; }
+  --ease: cubic-bezier(.22,.68,.28,1);
+  --gutter: clamp(20px, 5vw, 40px);
+}
 
-  /* HERO */
-  .hero {
-    background: #060B07;
-    color: #EAF3EC;
-    padding: 88px 0 100px;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: "";
-    position: absolute;
-    inset: -20% -10% auto auto;
-    width: 620px; height: 620px;
-    background: radial-gradient(circle, rgba(23,179,102,0.28) 0%, rgba(23,179,102,0) 68%);
-    pointer-events: none;
-  }
-  .hero .wrap {
-    display: grid;
-    grid-template-columns: 1.15fr 0.85fr;
-    gap: 56px;
-    align-items: center;
-    position: relative;
-  }
-  .hero-eyebrow {
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #59D690;
-    margin: 0 0 22px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .hero-eyebrow::before {
-    content: "";
-    width: 7px; height: 7px; border-radius: 50%;
-    background: #59D690;
-    box-shadow: 0 0 0 4px rgba(89,214,144,0.18);
-  }
-  h1.hero-title {
-    font-family: var(--sans);
-    font-weight: 700;
-    font-size: clamp(36px, 5vw, 58px);
-    line-height: 1.06;
-    letter-spacing: -0.015em;
-    margin: 0 0 24px;
-    text-wrap: balance;
-  }
-  .hero-title em { font-style: normal; color: #59D690; }
-  .hero-sub {
-    font-family: var(--body);
-    font-size: 19px;
-    color: #B9CFC1;
-    max-width: 46ch;
-    margin: 0 0 36px;
-  }
-  .hero-actions { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
-  .btn-primary {
-    font-family: var(--sans);
-    font-weight: 700;
-    font-size: 16px;
-    text-decoration: none;
-    color: #06170D;
-    background: linear-gradient(135deg, #59D690, #17B366);
-    padding: 15px 28px;
-    border-radius: 3px;
-    display: inline-block;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-    box-shadow: 0 8px 24px -8px rgba(23,179,102,0.55);
-  }
-  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 12px 28px -8px rgba(23,179,102,0.7); }
-  .hero-actions .hint { font-family: var(--mono); font-size: 13px; color: #7C9186; }
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--on-light);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--green-lit); outline-offset: 3px; border-radius: 2px; }
 
-  .hero-visual {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .hero-visual img { width: 100%; max-width: 340px; height: auto; display: block; }
+.wrap { width: 100%; max-width: 1140px; margin-inline: auto; padding-inline: var(--gutter); }
 
-  @media (max-width: 860px) {
-    .hero .wrap { grid-template-columns: 1fr; }
-    .hero-visual { order: -1; max-width: 220px; margin: 0 auto 12px; }
-  }
+/* Scroll reveal ------------------------------------------------ */
+.rv {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity .8s var(--ease), transform .8s var(--ease);
+  transition-delay: var(--d, 0ms);
+}
+.rv.seen { opacity: 1; transform: none; }
 
-  /* LEDGER STRIP */
-  .ledger {
-    background: #0C1710;
-    border-top: 1px solid #16281C;
-    border-bottom: 1px solid #16281C;
-    overflow: hidden;
-    white-space: nowrap;
-    padding: 14px 0;
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
   }
-  .ledger-track {
-    display: inline-flex;
-    gap: 48px;
-    font-family: var(--mono);
-    font-size: 13px;
-    color: #6B8A76;
-    animation: scroll-ledger 32s linear infinite;
-    font-variant-numeric: tabular-nums;
-  }
-  @media (prefers-reduced-motion: reduce) { .ledger-track { animation: none; } }
-  .ledger-track span b { color: #59D690; font-weight: 500; }
-  @keyframes scroll-ledger {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
+  .rv { opacity: 1; transform: none; }
+}
 
-  /* SECTIONS */
-  section { padding: 96px 0; }
-  .section-eyebrow {
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--green-500);
-    margin: 0 0 14px;
-  }
-  h2.section-title {
-    font-family: var(--sans);
-    font-weight: 700;
-    font-size: clamp(28px, 3.4vw, 40px);
-    margin: 0 0 18px;
-    max-width: 18ch;
-    text-wrap: balance;
-  }
-  .section-sub {
-    color: var(--ink-soft);
-    font-size: 18px;
-    max-width: 56ch;
-    margin: 0;
-  }
+/* Wordmark ----------------------------------------------------- */
+.wordmark {
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: -.02em;
+  display: inline-flex;
+  line-height: 1;
+}
+.wordmark .a { color: var(--on-dark); }
+.wordmark .b { color: var(--green-lit); }
 
-  /* PROBLEM */
-  .problem { background: var(--panel); border-top: 1px solid var(--panel-line); border-bottom: 1px solid var(--panel-line); }
-  .problem-grid {
-    margin-top: 48px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--panel-line);
-    border: 1px solid var(--panel-line);
-  }
-  .problem-card { background: var(--panel); padding: 32px 28px; }
-  .problem-card .num { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); display: block; margin-bottom: 16px; }
-  .problem-card p.line { font-family: var(--sans); font-weight: 700; font-size: 18px; margin: 0 0 8px; }
-  .problem-card p.detail { color: var(--ink-soft); font-size: 15px; margin: 0; }
-  @media (max-width: 780px) { .problem-grid { grid-template-columns: 1fr; } }
+/* ─── NAV ─────────────────────────────────────────────────────── */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(5,16,10,.72);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid transparent;
+  transition: border-color .3s var(--ease), background .3s var(--ease);
+}
+.nav.stuck { border-bottom-color: var(--hairline); background: rgba(5,16,10,.92); }
+.nav .wrap { display: flex; align-items: center; gap: 32px; height: 68px; }
+.nav-brand { display: flex; align-items: center; gap: 9px; margin-right: auto; }
+.nav-brand img { width: 30px; height: 30px; border-radius: 7px; }
+.nav-brand .wordmark { font-size: 20px; }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a {
+  font-size: 14.5px;
+  color: var(--on-dark-mid);
+  transition: color .2s var(--ease);
+}
+.nav-links a:hover { color: var(--on-dark); }
+.nav-cta {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--on-dark);
+  border: 1px solid rgba(92,224,143,.4);
+  border-radius: 999px;
+  padding: 8px 18px;
+  transition: background .25s var(--ease), border-color .25s var(--ease), color .25s var(--ease);
+}
+.nav-cta:hover { background: var(--green-lit); border-color: var(--green-lit); color: var(--green-deep); }
+@media (max-width: 860px) { .nav-links { display: none; } }
 
-  /* HOW IT WORKS */
-  .how-list { margin-top: 48px; display: flex; flex-direction: column; }
-  .how-step {
-    display: grid;
-    grid-template-columns: 90px 1fr;
-    gap: 28px;
-    padding: 32px 0;
-    border-top: 1px solid var(--panel-line);
-  }
-  .how-step:last-child { border-bottom: 1px solid var(--panel-line); }
-  .how-step .step-mark { font-family: var(--mono); font-size: 14px; color: var(--green-500); padding-top: 4px; }
-  .how-step h3 { font-family: var(--sans); font-weight: 700; font-size: 21px; margin: 0 0 8px; }
-  .how-step p { color: var(--ink-soft); font-size: 16px; margin: 0; max-width: 58ch; }
+/* ─── HERO ────────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  background: var(--ink);
+  color: var(--on-dark);
+  padding: clamp(64px, 9vw, 108px) 0 clamp(72px, 10vw, 120px);
+  overflow: hidden;
+  isolation: isolate;
+}
+.aurora {
+  position: absolute; z-index: -1;
+  width: 900px; height: 900px;
+  top: -420px; right: -220px;
+  background: radial-gradient(circle, rgba(18,183,106,.30) 0%, rgba(18,183,106,.08) 42%, transparent 68%);
+  animation: drift 22s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.aurora.two {
+  width: 620px; height: 620px;
+  top: auto; bottom: -380px; right: auto; left: -200px;
+  background: radial-gradient(circle, rgba(92,224,143,.16) 0%, transparent 66%);
+  animation-duration: 28s; animation-direction: alternate-reverse;
+}
+@keyframes drift {
+  from { transform: translate3d(0,0,0) scale(1); }
+  to   { transform: translate3d(-60px,50px,0) scale(1.12); }
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0,1.02fr) minmax(0,.98fr);
+  gap: clamp(36px, 5vw, 68px);
+  align-items: center;
+}
+.badge {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: var(--mono); font-size: 12px;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--green-lit);
+  border: 1px solid rgba(92,224,143,.24);
+  background: rgba(92,224,143,.06);
+  border-radius: 999px;
+  padding: 6px 15px 6px 12px;
+  margin-bottom: 26px;
+}
+.pulse {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green-lit);
+  animation: pulse 2.4s var(--ease) infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(92,224,143,.5); }
+  50%      { box-shadow: 0 0 0 6px rgba(92,224,143,0); }
+}
+.hero h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(38px, 5.4vw, 66px);
+  line-height: 1.03;
+  letter-spacing: -.035em;
+  margin: 0 0 22px;
+  text-wrap: balance;
+}
+.hl { position: relative; color: var(--green-lit); white-space: nowrap; }
+.hl::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: .06em;
+  height: .09em; border-radius: 2px;
+  background: var(--green);
+  transform: scaleX(0); transform-origin: left;
+  animation: swipe 1s var(--ease) .5s forwards;
+}
+@keyframes swipe { to { transform: scaleX(1); } }
+.hero p.lede {
+  font-size: clamp(17px, 1.5vw, 19.5px);
+  color: var(--on-dark-mid);
+  max-width: 47ch;
+  margin: 0 0 36px;
+}
+.hero-cta { display: flex; align-items: center; gap: 14px 24px; flex-wrap: wrap; }
+.btn {
+  font-family: var(--display); font-weight: 600; font-size: 16px;
+  border-radius: 8px; padding: 15px 28px;
+  display: inline-flex; align-items: center; gap: 10px;
+  transition: transform .22s var(--ease), box-shadow .22s var(--ease), background .22s var(--ease);
+  will-change: transform;
+}
+.btn-fill {
+  color: var(--green-deep);
+  background: linear-gradient(135deg, var(--green-lit), var(--green));
+  box-shadow: 0 10px 30px -10px rgba(18,183,106,.65);
+}
+.btn-fill:hover { transform: translateY(-2px); box-shadow: 0 16px 38px -12px rgba(18,183,106,.8); }
+.btn-fill .arw { transition: transform .22s var(--ease); }
+.btn-fill:hover .arw { transform: translateX(4px); }
+.hero-note { font-family: var(--mono); font-size: 13px; color: var(--on-dark-dim); }
 
-  /* TRUST */
-  .trust { background: #060B07; color: #EAF3EC; }
-  .trust .section-eyebrow { color: #59D690; }
-  .trust .section-sub { color: #9DB5A7; }
-  .trust-grid {
-    margin-top: 48px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 28px;
-  }
-  .trust-item {
-    padding: 26px 0 0;
-    border-top: 1px solid #1E3327;
-  }
-  .trust-item .t-num {
-    font-family: var(--mono);
-    font-size: 30px;
-    color: #59D690;
-    font-variant-numeric: tabular-nums;
-    display: block;
-    margin-bottom: 10px;
-  }
-  .trust-item h4 { font-family: var(--sans); font-size: 16px; margin: 0 0 6px; }
-  .trust-item p { color: #7C9186; font-size: 14px; margin: 0; }
+/* Painel de produto animado ------------------------------------ */
+.panel {
+  background: linear-gradient(168deg, var(--ink-3), var(--ink-2));
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  box-shadow: 0 40px 80px -40px rgba(0,0,0,.9), 0 0 0 1px rgba(92,224,143,.05);
+  overflow: hidden;
+  font-family: var(--mono);
+  font-size: 13px;
+}
+.panel-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--hairline);
+  background: rgba(0,0,0,.25);
+}
+.panel-bar .lamp { width: 9px; height: 9px; border-radius: 50%; background: #23412F; }
+.panel-bar .name { margin-left: 8px; color: var(--on-dark-dim); font-size: 12px; letter-spacing: .02em; }
+.panel-bar .live {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--green-lit);
+}
+.panel-rows { padding: 6px 0; }
+.prow {
+  display: grid;
+  grid-template-columns: 1fr auto 74px;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 16px;
+  border-bottom: 1px solid rgba(26,53,36,.5);
+  opacity: .45;
+  transition: opacity .45s var(--ease), background .45s var(--ease);
+}
+.prow:last-child { border-bottom: none; }
+.prow.done { opacity: 1; background: rgba(18,183,106,.045); }
+.prow .who { color: var(--on-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prow .key { display: block; font-size: 11px; color: var(--on-dark-dim); margin-top: 2px; }
+.prow .amt { color: var(--on-dark-mid); font-variant-numeric: tabular-nums; }
+.prow.done .amt { color: var(--on-dark); }
+.prow .st {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; color: var(--on-dark-dim);
+  justify-content: flex-end;
+}
+.prow.done .st { color: var(--green-lit); }
+.tick {
+  width: 15px; height: 15px; border-radius: 50%;
+  border: 1.5px solid currentColor;
+  display: grid; place-items: center;
+  flex: none;
+}
+.tick svg { width: 8px; height: 8px; opacity: 0; transform: scale(.4); transition: opacity .3s var(--ease), transform .35s var(--ease); }
+.prow.done .tick { background: var(--green); border-color: var(--green); color: var(--green-deep); }
+.prow.done .tick svg { opacity: 1; transform: scale(1); }
+.panel-foot { padding: 15px 16px 17px; border-top: 1px solid var(--hairline); background: rgba(0,0,0,.22); }
+.track { height: 4px; border-radius: 99px; background: rgba(255,255,255,.07); overflow: hidden; margin-bottom: 12px; }
+.track i {
+  display: block; height: 100%; width: 0%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--green), var(--green-lit));
+  transition: width .5s var(--ease);
+}
+.foot-line { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.foot-line .n { color: var(--green-lit); font-variant-numeric: tabular-nums; }
+.foot-line .t { color: var(--on-dark-dim); font-size: 12px; font-variant-numeric: tabular-nums; }
 
-  /* CTA */
-  .cta-panel {
-    background: linear-gradient(135deg, #0B4A2A, #17B366 65%, #59D690);
-    color: #06170D;
-    border-radius: 6px;
-    padding: 64px 56px;
-    display: grid;
-    grid-template-columns: 1.3fr 0.7fr;
-    gap: 40px;
-    align-items: center;
-  }
-  .cta-panel h2 { font-family: var(--sans); font-weight: 700; font-size: clamp(26px, 3.2vw, 36px); margin: 0 0 14px; text-wrap: balance; }
-  .cta-panel p { font-size: 17px; margin: 0; max-width: 44ch; opacity: 0.85; }
-  .cta-action { text-align: right; }
-  .btn-dark {
-    font-family: var(--sans);
-    font-weight: 700;
-    font-size: 16px;
-    text-decoration: none;
-    color: #EAF3EC;
-    background: #06170D;
-    padding: 16px 30px;
-    border-radius: 3px;
-    display: inline-block;
-    transition: transform 0.15s ease;
-  }
-  .btn-dark:hover { transform: translateY(-1px); }
-  .cta-action .hint { display: block; margin-top: 12px; font-family: var(--mono); font-size: 12px; opacity: 0.75; }
-  @media (max-width: 780px) {
-    .cta-panel { grid-template-columns: 1fr; padding: 40px 28px; }
-    .cta-action { text-align: left; }
-  }
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .panel { order: 2; }
+}
 
-  footer.site-foot {
-    border-top: 1px solid var(--panel-line);
-    padding: 40px 0 56px;
-  }
-  footer.site-foot .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
-  footer.site-foot .foot-wordmark { font-size: 17px; }
-  footer.site-foot .foot-meta { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); }
+/* ─── TICKER ──────────────────────────────────────────────────── */
+.ticker {
+  background: var(--ink-2);
+  border-block: 1px solid var(--hairline);
+  overflow: hidden;
+  padding: 13px 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.ticker-track {
+  display: flex; gap: 44px; width: max-content;
+  font-family: var(--mono); font-size: 12.5px;
+  color: var(--on-dark-dim);
+  font-variant-numeric: tabular-nums;
+  animation: slide 40s linear infinite;
+}
+.ticker-track b { color: var(--green-lit); font-weight: 500; }
+@keyframes slide { to { transform: translateX(-50%); } }
 
-  a:focus-visible, button:focus-visible {
-    outline: 2px solid var(--green-500);
-    outline-offset: 2px;
-  }
+/* ─── SECTIONS (light) ────────────────────────────────────────── */
+.sec { padding: clamp(72px, 10vw, 118px) 0; }
+.kicker {
+  font-family: var(--mono); font-size: 12px;
+  letter-spacing: .13em; text-transform: uppercase;
+  color: var(--green-ink); margin: 0 0 15px;
+}
+h2 {
+  font-family: var(--display); font-weight: 600;
+  font-size: clamp(29px, 3.7vw, 45px);
+  line-height: 1.08; letter-spacing: -.03em;
+  margin: 0 0 16px; max-width: 19ch; text-wrap: balance;
+}
+.sub { font-size: 18px; color: var(--on-light-mid); max-width: 55ch; margin: 0; }
+
+/* Problem cards */
+.cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-top: 52px; }
+.card {
+  background: var(--paper-2);
+  border: 1px solid var(--paper-line);
+  border-radius: 12px;
+  padding: 28px 26px 30px;
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s var(--ease);
+}
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(18,183,106,.35);
+  box-shadow: 0 20px 40px -26px rgba(8,21,14,.4);
+}
+.card .ix {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: rgba(10,122,70,.1);
+  color: var(--green-ink);
+  display: grid; place-items: center;
+  margin-bottom: 18px;
+}
+.card h3 { font-family: var(--display); font-weight: 600; font-size: 18px; letter-spacing: -.01em; margin: 0 0 7px; }
+.card p { margin: 0; font-size: 15.5px; color: var(--on-light-mid); }
+@media (max-width: 820px) { .cards { grid-template-columns: 1fr; } }
+
+/* Stats band */
+.band { background: var(--paper-2); border-block: 1px solid var(--paper-line); }
+.stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.stat { text-align: center; padding: clamp(38px,6vw,58px) 12px; position: relative; }
+.stat + .stat::before {
+  content: ""; position: absolute; left: 0; top: 22%; bottom: 22%;
+  width: 1px; background: var(--paper-line);
+}
+.stat .big {
+  font-family: var(--display); font-weight: 700;
+  font-size: clamp(42px, 6vw, 66px);
+  letter-spacing: -.045em; line-height: 1;
+  color: var(--green-deep);
+  font-variant-numeric: tabular-nums;
+  display: block; margin-bottom: 10px;
+}
+.stat .cap { font-size: 15px; color: var(--on-light-mid); max-width: 22ch; margin-inline: auto; }
+@media (max-width: 720px) {
+  .stats { grid-template-columns: 1fr; }
+  .stat + .stat::before { left: 22%; right: 22%; top: 0; bottom: auto; width: auto; height: 1px; }
+}
+
+/* Steps */
+.steps { margin-top: 56px; border-top: 1px solid var(--paper-line); }
+.step {
+  display: grid; grid-template-columns: 62px 1fr auto; gap: 26px;
+  align-items: start;
+  padding: 34px 0;
+  border-bottom: 1px solid var(--paper-line);
+  transition: background .3s var(--ease);
+}
+.step:hover { background: rgba(18,183,106,.028); }
+.step .no {
+  font-family: var(--mono); font-size: 13px; color: var(--green-ink);
+  padding-top: 5px;
+}
+.step h3 { font-family: var(--display); font-weight: 600; font-size: 21px; letter-spacing: -.02em; margin: 0 0 7px; }
+.step p { margin: 0; color: var(--on-light-mid); max-width: 56ch; font-size: 16px; }
+.step .chip {
+  font-family: var(--mono); font-size: 11.5px;
+  color: var(--on-light-mid);
+  background: var(--paper-2);
+  border: 1px solid var(--paper-line);
+  border-radius: 6px; padding: 5px 11px;
+  white-space: nowrap; margin-top: 4px;
+}
+@media (max-width: 760px) {
+  .step { grid-template-columns: 40px 1fr; }
+  .step .chip { display: none; }
+}
+
+/* ─── SECURITY (dark) ─────────────────────────────────────────── */
+.dark { background: var(--ink); color: var(--on-dark); }
+.dark .kicker { color: var(--green-lit); }
+.dark .sub { color: var(--on-dark-mid); }
+.secure-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; margin-top: 56px; background: var(--hairline); border: 1px solid var(--hairline); border-radius: 12px; overflow: hidden; }
+.sitem { background: var(--ink); padding: 34px 28px 36px; transition: background .35s var(--ease); }
+.sitem:hover { background: var(--ink-2); }
+.sitem .ic {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: rgba(92,224,143,.09);
+  border: 1px solid rgba(92,224,143,.2);
+  color: var(--green-lit);
+  display: grid; place-items: center; margin-bottom: 20px;
+}
+.sitem h3 { font-family: var(--display); font-weight: 600; font-size: 17.5px; letter-spacing: -.015em; margin: 0 0 8px; }
+.sitem p { margin: 0; font-size: 15px; color: var(--on-dark-mid); }
+@media (max-width: 880px) { .secure-grid { grid-template-columns: 1fr; } }
+
+/* ─── CTA ─────────────────────────────────────────────────────── */
+.cta-sec { padding: clamp(60px,8vw,96px) 0; background: var(--paper); }
+.cta {
+  position: relative; overflow: hidden;
+  border-radius: 18px;
+  background: linear-gradient(128deg, var(--green-deep) 0%, #0A7A46 46%, var(--green) 100%);
+  color: #EAFBF1;
+  padding: clamp(42px,6vw,66px) clamp(28px,5vw,60px);
+  display: grid; grid-template-columns: 1.35fr .65fr; gap: 36px; align-items: center;
+}
+.cta::after {
+  content: ""; position: absolute; inset: auto -80px -160px auto;
+  width: 420px; height: 420px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,.16), transparent 65%);
+  pointer-events: none;
+}
+.cta h2 { color: #FFF; margin-bottom: 12px; max-width: 15ch; }
+.cta p { margin: 0; opacity: .9; max-width: 42ch; font-size: 16.5px; }
+.cta-side { text-align: right; position: relative; z-index: 1; }
+.btn-dark { background: var(--ink); color: var(--on-dark); box-shadow: 0 12px 30px -14px rgba(0,0,0,.7); }
+.btn-dark:hover { transform: translateY(-2px); background: #0A1A11; }
+.cta-side small { display: block; margin-top: 12px; font-family: var(--mono); font-size: 12px; opacity: .8; }
+@media (max-width: 800px) {
+  .cta { grid-template-columns: 1fr; }
+  .cta-side { text-align: left; }
+}
+
+/* ─── FOOTER ──────────────────────────────────────────────────── */
+.foot { background: var(--ink); color: var(--on-dark-mid); padding: 52px 0 60px; border-top: 1px solid var(--hairline); }
+.foot .wrap { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+.foot-brand { display: flex; align-items: center; gap: 10px; }
+.foot-brand img { width: 32px; height: 32px; border-radius: 8px; }
+.foot-brand .wordmark { font-size: 19px; }
+.foot small { font-family: var(--mono); font-size: 12px; color: var(--on-dark-dim); }
 </style>
 </head>
 <body>
 
-<nav>
+<nav class="nav" id="nav">
   <div class="wrap">
-    <span class="wordmark"><span class="pay">pay</span><span class="yo">yo</span></span>
+    <a class="nav-brand" href="#top" aria-label="Payyo — início">
+      <img src="assets/favicon.png" alt="" width="30" height="30">
+      <span class="wordmark"><span class="a">pay</span><span class="b">yo</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#problema">O problema</a>
+      <a href="#como">Como funciona</a>
+      <a href="#seguranca">Segurança</a>
+    </div>
     <a class="nav-cta" href="mailto:bernardomc294@gmail.com?subject=Quero%20ser%20piloto%20do%20Payyo">Quero ser piloto</a>
   </div>
 </nav>
 
-<header class="hero">
-  <div class="wrap">
+<header class="hero" id="top">
+  <div class="aurora" aria-hidden="true"></div>
+  <div class="aurora two" aria-hidden="true"></div>
+  <div class="wrap hero-grid">
+
     <div class="hero-copy">
-      <p class="hero-eyebrow">pagamentos em lote via PIX</p>
-      <h1 class="hero-title">Pague sua folha inteira em <em>PIX</em>, não linha por linha.</h1>
-      <p class="hero-sub">O Payyo lê sua lista de pagamentos, você revisa uma vez e aprova em lote. Cada PIX sai individualmente pela sua própria conta Inter — com comprovante e log de auditoria por transação.</p>
-      <div class="hero-actions">
-        <a class="btn-primary" href="mailto:bernardomc294@gmail.com?subject=Quero%20ser%20piloto%20do%20Payyo">Quero ser piloto</a>
-        <span class="hint">vagas limitadas · sem custo no piloto</span>
+      <span class="badge rv"><span class="pulse"></span>Pagamentos em lote via PIX</span>
+      <h1 class="rv" style="--d:80ms">Pague a folha inteira em <span class="hl">um clique</span>, não linha por linha.</h1>
+      <p class="lede rv" style="--d:160ms">O Payyo lê sua lista de pagamentos, você confere uma vez e aprova o lote. Cada PIX sai individualmente pela <strong>sua própria conta Inter</strong> — com comprovante e log de auditoria por transação.</p>
+      <div class="hero-cta rv" style="--d:240ms">
+        <a class="btn btn-fill" href="mailto:bernardomc294@gmail.com?subject=Quero%20ser%20piloto%20do%20Payyo">
+          Quero ser piloto
+          <svg class="arw" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <span class="hero-note">vagas limitadas · sem custo durante o piloto</span>
       </div>
     </div>
-    <div class="hero-visual">
-      <img src="assets/logo-payyo.jpg" alt="Payyo" width="340" height="340">
+
+    <div class="panel rv" style="--d:320ms" id="panel" role="img" aria-label="Demonstração: lote de 47 pagamentos PIX sendo enviado, todos confirmados em 12 segundos.">
+      <div class="panel-bar">
+        <span class="lamp"></span><span class="lamp"></span><span class="lamp"></span>
+        <span class="name">lote #0392 · folha de agosto</span>
+        <span class="live"><span class="pulse"></span>enviando</span>
+      </div>
+      <div class="panel-rows" id="rows">
+        <div class="prow"><span><span class="who">Ana Beatriz Ramos</span><span class="key">•••••@gmail.com</span></span><span class="amt">R$ 1.840,00</span><span class="st"><span class="tick"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5.2 3.8 7.5 8.5 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>ok</span></span></div>
+        <div class="prow"><span><span class="who">Carlos Eduardo Lima</span><span class="key">•••.•••.412-••</span></span><span class="amt">R$ 2.150,00</span><span class="st"><span class="tick"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5.2 3.8 7.5 8.5 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>ok</span></span></div>
+        <div class="prow"><span><span class="who">Fernanda Alves</span><span class="key">+55 •• ••••-9021</span></span><span class="amt">R$ 980,00</span><span class="st"><span class="tick"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5.2 3.8 7.5 8.5 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>ok</span></span></div>
+        <div class="prow"><span><span class="who">Marcos Vinícius Sá</span><span class="key">•••••@outlook.com</span></span><span class="amt">R$ 3.300,00</span><span class="st"><span class="tick"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5.2 3.8 7.5 8.5 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>ok</span></span></div>
+        <div class="prow"><span><span class="who">Juliana Prado</span><span class="key">•••.•••.087-••</span></span><span class="amt">R$ 1.275,00</span><span class="st"><span class="tick"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5.2 3.8 7.5 8.5 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>ok</span></span></div>
+        <div class="prow"><span><span class="who">Rafael Nogueira</span><span class="key">+55 •• ••••-3374</span></span><span class="amt">R$ 2.060,00</span><span class="st"><span class="tick"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5.2 3.8 7.5 8.5 2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>ok</span></span></div>
+      </div>
+      <div class="panel-foot">
+        <div class="track"><i id="bar"></i></div>
+        <div class="foot-line">
+          <span class="n"><span id="sent">0</span>/47 pagamentos enviados</span>
+          <span class="t">R$ 14.220,00</span>
+        </div>
+      </div>
     </div>
+
   </div>
 </header>
 
-<div class="ledger" aria-hidden="true">
-  <div class="ledger-track">
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
     <span>18:42:03 · lote #0392 · <b>R$ 14.220,00</b> · 47/47 enviados</span>
     <span>09:07:41 · lote #0388 · <b>R$ 3.150,00</b> · 12/12 enviados</span>
     <span>21:15:56 · lote #0381 · <b>R$ 22.840,00</b> · 63/63 enviados</span>
     <span>14:33:09 · lote #0375 · <b>R$ 8.900,00</b> · 29/29 enviados</span>
+    <span>11:02:18 · lote #0369 · <b>R$ 5.470,00</b> · 18/18 enviados</span>
     <span>18:42:03 · lote #0392 · <b>R$ 14.220,00</b> · 47/47 enviados</span>
     <span>09:07:41 · lote #0388 · <b>R$ 3.150,00</b> · 12/12 enviados</span>
     <span>21:15:56 · lote #0381 · <b>R$ 22.840,00</b> · 63/63 enviados</span>
     <span>14:33:09 · lote #0375 · <b>R$ 8.900,00</b> · 29/29 enviados</span>
+    <span>11:02:18 · lote #0369 · <b>R$ 5.470,00</b> · 18/18 enviados</span>
   </div>
 </div>
 
-<section class="problem">
+<section class="sec" id="problema">
   <div class="wrap">
-    <p class="section-eyebrow">o problema de todo mês</p>
-    <h2 class="section-title">Pagamento em lote hoje é copiar chave, colar valor, repetir.</h2>
-    <p class="section-sub">Pequenas empresas e prestadoras pagam dezenas de pessoas por mês — no braço, um PIX de cada vez.</p>
-    <div class="problem-grid">
-      <div class="problem-card">
-        <span class="num">01</span>
-        <p class="line">Erro de digitação vira dor de cabeça</p>
-        <p class="detail">Uma chave errada, um valor trocado — e agora é estorno, desculpa e retrabalho.</p>
+    <p class="kicker rv">O problema de toda virada de mês</p>
+    <h2 class="rv" style="--d:60ms">Pagar em lote hoje é copiar chave, colar valor, repetir.</h2>
+    <p class="sub rv" style="--d:120ms">Pequenas empresas e prestadoras pagam dezenas de pessoas por mês — no braço, um PIX de cada vez, numa aba do banco que expira sozinha.</p>
+
+    <div class="cards">
+      <div class="card rv" style="--d:60ms">
+        <div class="ix"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 6v5m0 3h.01M10 2.5 2.5 16.5h15L10 2.5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Um dígito errado vira estorno</h3>
+        <p>Chave trocada, valor com uma casa a mais — e agora é pedir dinheiro de volta e refazer tudo.</p>
       </div>
-      <div class="problem-card">
-        <span class="num">02</span>
-        <p class="line">Ninguém sabe quem já recebeu</p>
-        <p class="detail">Planilha de controle desatualizada, comprovante espalhado em pasta de download.</p>
+      <div class="card rv" style="--d:140ms">
+        <div class="ix"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M3 5.5h14M3 10h14M3 14.5h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+        <h3>Ninguém sabe quem já recebeu</h3>
+        <p>Planilha de controle desatualizada e comprovantes espalhados na pasta de downloads.</p>
       </div>
-      <div class="problem-card">
-        <span class="num">03</span>
-        <p class="line">Uma tarde inteira só nisso</p>
-        <p class="detail">Toda virada de mês, alguém do financeiro trava horas fazendo PIX manual.</p>
+      <div class="card rv" style="--d:220ms">
+        <div class="ix"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.6"/><path d="M10 5.8V10l2.8 1.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Uma tarde inteira só nisso</h3>
+        <p>Todo mês alguém do financeiro trava horas fazendo PIX manual em vez de fazer o trabalho de verdade.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section class="how">
+<section class="band">
+  <div class="wrap stats">
+    <div class="stat rv">
+      <span class="big" data-count="47" data-suffix="">0</span>
+      <p class="cap">pagamentos num único lote</p>
+    </div>
+    <div class="stat rv" style="--d:100ms">
+      <span class="big" data-count="12" data-suffix="s">0</span>
+      <p class="cap">do envio à última confirmação</p>
+    </div>
+    <div class="stat rv" style="--d:200ms">
+      <span class="big" data-count="1" data-suffix="">0</span>
+      <p class="cap">aprovação sua — não 47</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="como">
   <div class="wrap">
-    <p class="section-eyebrow">como funciona</p>
-    <h2 class="section-title">Três passos, sem mudar de conta bancária.</h2>
-    <div class="how-list">
-      <div class="how-step">
-        <span class="step-mark">01</span>
+    <p class="kicker rv">Como funciona</p>
+    <h2 class="rv" style="--d:60ms">Três passos, sem trocar de banco.</h2>
+    <p class="sub rv" style="--d:120ms">O Payyo não substitui sua conta — ele conversa com ela.</p>
+
+    <div class="steps">
+      <div class="step rv" style="--d:60ms">
+        <span class="no">01</span>
         <div>
           <h3>Sobe a lista</h3>
-          <p>Importa a planilha com chave PIX, nome e valor — a mesma que você já usa hoje.</p>
+          <p>Importa a planilha com chave PIX, nome e valor. A mesma que você já usa hoje, sem formato novo pra aprender.</p>
         </div>
+        <span class="chip">.xlsx · .csv</span>
       </div>
-      <div class="how-step">
-        <span class="step-mark">02</span>
+      <div class="step rv" style="--d:130ms">
+        <span class="no">02</span>
         <div>
           <h3>Revisa e aprova</h3>
-          <p>Uma tela com todos os pagamentos do lote. Você confere os valores uma vez, não um por um.</p>
+          <p>Uma tela com o lote inteiro: quem recebe, quanto e por qual chave. Você confere de uma vez e aprova — sem repetir a conferência 47 vezes.</p>
         </div>
+        <span class="chip">1 aprovação</span>
       </div>
-      <div class="how-step">
-        <span class="step-mark">03</span>
+      <div class="step rv" style="--d:200ms">
+        <span class="no">03</span>
         <div>
           <h3>O lote sai sozinho</h3>
-          <p>O Payyo dispara cada PIX pela sua conta Inter e devolve comprovante e status de cada envio.</p>
+          <p>O Payyo dispara cada PIX pela sua conta Inter e devolve comprovante e status de cada envio. Se um falhar, os outros seguem.</p>
         </div>
+        <span class="chip">API do Inter</span>
       </div>
     </div>
   </div>
 </section>
 
-<section class="trust">
+<section class="sec dark" id="seguranca">
   <div class="wrap">
-    <p class="section-eyebrow">segurança, não promessa</p>
-    <h2 class="section-title">O dinheiro passa pela sua conta, nunca pela nossa.</h2>
-    <p class="section-sub">O Payyo conecta direto na sua conta Inter — não guardamos saldo, não intermediamos valor.</p>
-    <div class="trust-grid">
-      <div class="trust-item">
-        <span class="t-num">A→Z</span>
-        <h4>Credencial só sua, criptografada</h4>
-        <p>Cada cliente conecta a própria conta Inter. Nenhuma credencial é compartilhada entre contas.</p>
+    <p class="kicker rv">Segurança, não promessa</p>
+    <h2 class="rv" style="--d:60ms">O dinheiro passa pela sua conta, nunca pela nossa.</h2>
+    <p class="sub rv" style="--d:120ms">O Payyo conecta direto na sua conta Inter. Não guardamos saldo, não intermediamos valor, não seguramos repasse.</p>
+
+    <div class="secure-grid">
+      <div class="sitem rv" style="--d:60ms">
+        <div class="ic"><svg width="19" height="19" viewBox="0 0 20 20" fill="none"><path d="M10 2.5 3.75 5v4.4c0 3.9 2.6 6.9 6.25 8.1 3.65-1.2 6.25-4.2 6.25-8.1V5L10 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M7.8 10.1 9.4 11.7l3-3.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Credencial só sua, criptografada</h3>
+        <p>Cada cliente conecta a própria conta Inter. Nenhuma credencial é compartilhada entre contas, e todas ficam cifradas em repouso.</p>
       </div>
-      <div class="trust-item">
-        <span class="t-num">100%</span>
-        <h4>Log de auditoria por PIX</h4>
-        <p>Todo envio fica registrado — quem, quanto, quando e o status de confirmação.</p>
+      <div class="sitem rv" style="--d:140ms">
+        <div class="ic"><svg width="19" height="19" viewBox="0 0 20 20" fill="none"><path d="M5 2.8h7.2L16 6.5v10.7H5V2.8Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11.8 2.9v3.8H15.8M7.6 10.5h5.2M7.6 13.4h3.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Log de auditoria por PIX</h3>
+        <p>Todo envio fica registrado: quem aprovou, quanto, quando e o status de confirmação. Auditoria pronta, não reconstruída depois.</p>
       </div>
-      <div class="trust-item">
-        <span class="t-num">0</span>
-        <h4>Nenhum saldo guardado com a gente</h4>
-        <p>O Payyo dispara pagamentos. Ele não retém, não custodia, não movimenta fora da sua conta.</p>
+      <div class="sitem rv" style="--d:220ms">
+        <div class="ic"><svg width="19" height="19" viewBox="0 0 20 20" fill="none"><path d="M2.8 7.6 10 3.2l7.2 4.4M4.6 8.6v6.2M8.6 8.6v6.2M11.4 8.6v6.2M15.4 8.6v6.2M2.8 16.8h14.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Zero saldo guardado com a gente</h3>
+        <p>O Payyo dispara pagamentos. Ele não retém, não custodia e não movimenta nada fora da sua própria conta.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section class="cta">
+<section class="cta-sec">
   <div class="wrap">
-    <div class="cta-panel">
+    <div class="cta rv">
       <div>
         <h2>Fase de piloto aberta.</h2>
-        <p>Estamos validando o Payyo com um punhado de pequenas empresas antes do lançamento público. Entra agora e ajuda a moldar o produto.</p>
+        <p>Estamos validando o Payyo com um punhado de pequenas empresas antes do lançamento. Entra agora, usa de graça e ajuda a decidir o que o produto vira.</p>
       </div>
-      <div class="cta-action">
-        <a class="btn-dark" href="mailto:bernardomc294@gmail.com?subject=Quero%20ser%20piloto%20do%20Payyo">Falar sobre o piloto</a>
-        <span class="hint">resposta em até 2 dias úteis</span>
+      <div class="cta-side">
+        <a class="btn btn-dark" href="mailto:bernardomc294@gmail.com?subject=Quero%20ser%20piloto%20do%20Payyo">Falar sobre o piloto</a>
+        <small>resposta em até 2 dias úteis</small>
       </div>
     </div>
   </div>
 </section>
 
-<footer class="site-foot">
+<footer class="foot">
   <div class="wrap">
-    <span class="wordmark foot-wordmark"><span class="pay">pay</span><span class="yo">yo</span></span>
-    <span class="foot-meta">pagamentos em lote · simples, rápido, seguro</span>
+    <div class="foot-brand">
+      <img src="assets/favicon.png" alt="" width="32" height="32">
+      <span class="wordmark"><span class="a">pay</span><span class="b">yo</span></span>
+    </div>
+    <small>Pagamentos em lote. Simples, rápido, seguro.</small>
   </div>
 </footer>
+
+<script>
+(function () {
+  var slow = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Nav ganha borda ao descolar do topo */
+  var nav = document.getElementById('nav');
+  var onScroll = function () { nav.classList.toggle('stuck', window.scrollY > 8); };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  /* Reveal no scroll */
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('seen');
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -12% 0px', threshold: 0.12 });
+  document.querySelectorAll('.rv').forEach(function (el) { io.observe(el); });
+
+  /* Contadores da faixa de números */
+  var counters = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      var el = e.target, end = +el.dataset.count, sfx = el.dataset.suffix || '';
+      counters.unobserve(el);
+      if (slow) { el.textContent = end + sfx; return; }
+      var t0 = performance.now(), dur = 1100;
+      (function tick(now) {
+        var p = Math.min((now - t0) / dur, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(end * eased) + sfx;
+        if (p < 1) requestAnimationFrame(tick);
+      })(t0);
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('.big[data-count]').forEach(function (el) { counters.observe(el); });
+
+  /* Painel do hero: o lote processando */
+  var rows = Array.prototype.slice.call(document.querySelectorAll('#rows .prow'));
+  var bar = document.getElementById('bar');
+  var sent = document.getElementById('sent');
+  var TOTAL = 47;
+
+  function finish() {
+    rows.forEach(function (r) { r.classList.add('done'); });
+    bar.style.width = '100%';
+    sent.textContent = TOTAL;
+  }
+
+  function runBatch() {
+    rows.forEach(function (r) { r.classList.remove('done'); });
+    bar.style.width = '0%';
+    sent.textContent = '0';
+
+    rows.forEach(function (row, i) {
+      setTimeout(function () {
+        row.classList.add('done');
+        var done = i + 1;
+        var count = Math.round(TOTAL * (done / rows.length));
+        bar.style.width = (done / rows.length) * 100 + '%';
+        sent.textContent = count;
+      }, 620 + i * 480);
+    });
+  }
+
+  if (slow) {
+    finish();
+  } else {
+    var started = false;
+    var panelIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting || started) return;
+        started = true;
+        runBatch();
+        setInterval(runBatch, 620 + rows.length * 480 + 3200);
+      });
+    }, { threshold: 0.35 });
+    panelIO.observe(document.getElementById('panel'));
+  }
+})();
+</script>
 
 </body>
 </html>
