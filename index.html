@@ -232,6 +232,13 @@ h2 {
 .foot .brand .mk { width: 27px; }
 .foot .brand .wm { font-size: 17px; }
 .foot small { font-family: var(--mono); font-size: 11.5px; color: var(--tx-3); }
+.foot-meta { display: flex; align-items: baseline; gap: 26px; flex-wrap: wrap; }
+.foot .ig {
+  font-family: var(--mono); font-size: 11.5px; color: var(--green);
+  border-bottom: 1px solid var(--green-2); padding-bottom: 2px;
+  transition: border-color .18s ease;
+}
+.foot .ig:hover { border-bottom-color: var(--green); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .001ms !important; animation-duration: .001ms !important; }
@@ -418,7 +425,10 @@ h2 {
       </svg>
       <span class="wm">pay<i>yo</i></span>
     </span>
-    <small>pagamento em lote via PIX</small>
+    <span class="foot-meta">
+      <small>pagamento em lote via PIX</small>
+      <a class="ig" href="https://instagram.com/payyo.br" target="_blank" rel="noopener">@payyo.br</a>
+    </span>
   </div>
 </footer>
 
