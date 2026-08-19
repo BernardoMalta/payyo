@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0C0F0D;--rule:#262C28;--rule-2:#343B37;
+        --tx:#E9EBE9;--tx-2:#98A19B;--tx-3:#78827B;--green:#35C46F;
+        --sans:"Archivo",sans-serif;--mono:"IBM Plex Mono",monospace;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#000;font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  .board{width:1080px;height:1350px;background:var(--ink);color:var(--tx);
+         padding:84px 88px;display:flex;flex-direction:column}
+  .hd{display:flex;justify-content:space-between;align-items:baseline;
+      font-family:var(--mono);font-size:23px;letter-spacing:.15em;text-transform:uppercase;
+      color:var(--tx-3);padding-bottom:22px;border-bottom:1px solid var(--rule)}
+  .ft{margin-top:auto;padding-top:26px;border-top:1px solid var(--rule);
+      display:flex;justify-content:space-between;align-items:baseline;
+      font-family:var(--mono);font-size:23px;letter-spacing:.1em;color:var(--tx-3)}
+  .body{flex:1;display:flex;flex-direction:column;justify-content:center}
+  h1{font-weight:700;font-size:110px;line-height:.97;letter-spacing:-.042em}
+  h2{font-weight:600;font-size:64px;line-height:1.08;letter-spacing:-.03em}
+  .g{color:var(--green)}
+  .kick{font-family:var(--mono);font-size:26px;letter-spacing:.08em;color:var(--green)}
+  p.txt{font-size:34px;line-height:1.46;color:var(--tx-2)}
+  .mk{color:var(--green);display:block}
+
+  /* colofão da equipe */
+  .crew{width:100%;border-collapse:collapse;margin-top:10px}
+  .crew td{padding:28px 0;border-bottom:1px solid var(--rule);vertical-align:baseline}
+  .crew tr:last-child td{border-bottom:none}
+  .crew td.n{font-size:38px;font-weight:600;letter-spacing:-.02em}
+  .crew td.r{font-family:var(--mono);font-size:25px;color:var(--tx-3);text-align:right;white-space:nowrap}
+  .lbl{font-family:var(--mono);font-size:23px;letter-spacing:.14em;text-transform:uppercase;
+       color:var(--green);padding-bottom:18px;border-bottom:2px solid var(--rule-2);display:block}
+</style></head>
+<body>
+
+<!-- ══ 01 — ABERTURA ══ -->
+<div class="board">
+  <div class="hd"><span>Payyo</span><span>01/03</span></div>
+  <div class="body" style="gap:44px">
+    <svg class="mk" width="200" viewBox="0 0 96 84" fill="none">
+      <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M40 12 H74 A12 12 0 0 1 74 36 H52 L30 72" stroke-width="13"/>
+        <path d="M25 28 H37" stroke-width="10"/><path d="M17 40 H29" stroke-width="10"/><path d="M8 52 H20" stroke-width="10"/>
+      </g>
+    </svg>
+    <h1>QUEM<br><span class="g">SOMOS</span>.</h1>
+    <p class="txt" style="max-width:24ch">O time por trás do Payyo, e o problema que fez ele existir.</p>
+  </div>
+  <div class="ft"><span>pagamento em lote</span><span>arrasta →</span></div>
+</div>
+
+<!-- ══ 02 — POR QUE EXISTE ══ -->
+<div class="board">
+  <div class="hd"><span>Por que existe</span><span>02/03</span></div>
+  <div class="body" style="gap:52px">
+    <h2>Nasceu de um problema<br>que a gente viu de perto.</h2>
+    <p class="txt" style="max-width:26ch">Toda virada de mês tem alguém do financeiro parado, repetindo o mesmo Pix. Chave, valor, confirma. Quarenta e sete vezes.</p>
+    <p class="txt" style="max-width:26ch;color:var(--tx)">Construímos o Payyo para que esse trabalho simplesmente deixe de existir.</p>
+  </div>
+  <div class="ft"><span>3 h 20 min por mês, no braço</span><span>arrasta →</span></div>
+</div>
+
+<!-- ══ 03 — EQUIPE ══ -->
+<div class="board">
+  <div class="hd"><span>Equipe</span><span>03/03</span></div>
+  <div class="body" style="gap:46px">
+    <div>
+      <span class="lbl">Quem constrói</span>
+      <table class="crew">
+        <tr><td class="n">Bernardo Malta</td><td class="r">produto e engenharia</td></tr>
+        <tr><td class="n">__AMIGO__</td><td class="r">marca e design</td></tr>
+      </table>
+    </div>
+    <p class="txt" style="max-width:27ch">Somos poucos. Na prática isso quer dizer que você fala direto com quem constrói, e o que você pedir entra na fila de verdade.</p>
+  </div>
+  <div class="ft" style="color:var(--green)"><span>piloto aberto · link na bio</span><span>@payyo.br</span></div>
+</div>
+
+</body></html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0C0F0D; --ink-2:#131715; --rule:#262C28; --rule-2:#343B37;
+    --tx:#E9EBE9; --tx-2:#98A19B; --tx-3:#78827B; --green:#35C46F;
+    --sans:"Archivo",sans-serif; --mono:"IBM Plex Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#000;font-family:var(--sans);-webkit-font-smoothing:antialiased;}
+
+  .board{width:1080px;background:var(--ink);color:var(--tx);position:relative;overflow:hidden;}
+  .avatar{height:1080px;display:grid;place-items:center;}
+  .slide{height:1350px;padding:84px 88px;display:flex;flex-direction:column;}
+
+  .mark{color:var(--green);display:block;}
+
+  /* cabeçalho e rodapé de documento */
+  .hd{display:flex;justify-content:space-between;align-items:baseline;
+      font-family:var(--mono);font-size:23px;letter-spacing:.15em;text-transform:uppercase;color:var(--tx-3);
+      padding-bottom:22px;border-bottom:1px solid var(--rule);}
+  .ft{margin-top:auto;padding-top:26px;border-top:1px solid var(--rule);
+      display:flex;justify-content:space-between;align-items:baseline;
+      font-family:var(--mono);font-size:23px;letter-spacing:.1em;color:var(--tx-3);}
+
+  .body{flex:1;display:flex;flex-direction:column;justify-content:center;}
+
+  h1{font-weight:700;font-size:104px;line-height:.98;letter-spacing:-.04em;}
+  h2{font-weight:600;font-size:70px;line-height:1.06;letter-spacing:-.032em;}
+  .g{color:var(--green);}
+  .kick{font-family:var(--mono);font-size:26px;letter-spacing:.08em;color:var(--green);}
+  p.txt{font-size:34px;line-height:1.45;color:var(--tx-2);max-width:22ch;}
+
+  /* tabela de custo */
+  table{width:100%;border-collapse:collapse;}
+  .cost td{padding:26px 0;border-bottom:1px solid var(--rule);vertical-align:baseline;}
+  .cost td.a{font-size:32px;color:var(--tx-2);}
+  .cost td.b{font-family:var(--mono);font-size:32px;color:var(--tx);text-align:right;
+             white-space:nowrap;font-variant-numeric:tabular-nums;}
+  .cost tr.sum td{border-bottom:none;border-top:2px solid var(--rule-2);padding-top:30px;}
+  .cost tr.sum td.a{color:var(--tx);font-weight:600;font-size:34px;}
+  .cost tr.sum td.b{font-size:46px;}
+
+  .big{font-family:var(--mono);font-weight:500;font-size:250px;line-height:.86;
+       letter-spacing:-.05em;color:var(--green);font-variant-numeric:tabular-nums;
+       display:inline-flex;align-items:baseline;}
+  .big .u{font-family:var(--sans);font-weight:600;font-size:.38em;letter-spacing:-.02em;margin-left:.07em;}
+</style></head>
+<body>
+
+<!-- ══ AVATAR 1080×1080 — fundo escuro ══ -->
+<div class="board avatar">
+  <svg class="mark" width="650" viewBox="0 0 96 84" fill="none" style="margin-left:-16px;">
+    <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M40 12 H74 A12 12 0 0 1 74 36 H52 L30 72" stroke-width="13"/>
+      <path d="M25 28 H37" stroke-width="10"/><path d="M17 40 H29" stroke-width="10"/><path d="M8 52 H20" stroke-width="10"/>
+    </g>
+  </svg>
+</div>
+
+<!-- ══ AVATAR 1080×1080 — fundo verde (alternativa) ══ -->
+<div class="board avatar" style="background:#35C46F;">
+  <svg class="mark" width="650" viewBox="0 0 96 84" fill="none" style="margin-left:-16px;color:#0C0F0D;">
+    <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M40 12 H74 A12 12 0 0 1 74 36 H52 L30 72" stroke-width="13"/>
+      <path d="M25 28 H37" stroke-width="10"/><path d="M17 40 H29" stroke-width="10"/><path d="M8 52 H20" stroke-width="10"/>
+    </g>
+  </svg>
+</div>
+
+<!-- ══ SLIDE 01 — IMPACTO ══ -->
+<div class="board slide">
+  <div class="hd"><span>Payyo</span><span>01/03</span></div>
+  <div class="body" style="gap:76px;">
+    <svg class="mark" width="400" viewBox="0 0 96 84" fill="none">
+      <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M40 12 H74 A12 12 0 0 1 74 36 H52 L30 72" stroke-width="13"/>
+        <path d="M25 28 H37" stroke-width="10"/><path d="M17 40 H29" stroke-width="10"/><path d="M8 52 H20" stroke-width="10"/>
+      </g>
+    </svg>
+    <div>
+      <h1>CHEGOU<br>O PAY<span class="g">YO</span>.</h1>
+      <p class="kick" style="margin-top:30px;">pagamentos em lote</p>
+    </div>
+  </div>
+  <div class="ft"><span>simples, rápido e seguro</span><span>arrasta →</span></div>
+</div>
+
+<!-- ══ SLIDE 02 — O CUSTO ══ -->
+<div class="board slide">
+  <div class="hd"><span>O custo de hoje</span><span>02/03</span></div>
+  <div class="body" style="gap:64px;">
+    <h2>Uma folha de 47&nbsp;pessoas,<br>paga no braço.</h2>
+    <table class="cost">
+      <tr><td class="a">Montar e conferir a planilha</td><td class="b">40 min</td></tr>
+      <tr><td class="a">Copiar chave e valor, um por um</td><td class="b">2 h 10 min</td></tr>
+      <tr><td class="a">Baixar e organizar os comprovantes</td><td class="b">30 min</td></tr>
+      <tr class="sum"><td class="a">Toda virada de mês</td><td class="b">3 h 20 min</td></tr>
+    </table>
+  </div>
+  <div class="ft"><span>copiar · colar · repetir 47 vezes</span><span>arrasta →</span></div>
+</div>
+
+<!-- ══ SLIDE 03 — A SOLUÇÃO ══ -->
+<div class="board slide">
+  <div class="hd"><span>Com o Payyo</span><span>03/03</span></div>
+  <div class="body" style="gap:52px;">
+    <h2>O mesmo lote,<br>numa aprovação só.</h2>
+    <div>
+      <p class="kick" style="color:var(--tx-3);margin-bottom:14px;">tempo de execução</p>
+      <span class="big">12<span class="u">s</span></span>
+    </div>
+    <p class="txt" style="max-width:27ch;">Você sobe a planilha que já usa, confere de uma vez e aprova. Cada pagamento sai pela sua própria conta, com comprovante.</p>
+  </div>
+  <div class="ft" style="color:var(--green);"><span>piloto aberto · link na bio</span><span>@payyo.br</span></div>
+</div>
+
+</body></html>
