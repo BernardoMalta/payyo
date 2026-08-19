@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 84" fill="none" role="img" aria-label="Payyo">
+  <title>Payyo</title>
+  <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M40 12 H74 A12 12 0 0 1 74 36 H52 L30 72" stroke-width="13"/>
+    <path d="M25 28 H37" stroke-width="10"/>
+    <path d="M17 40 H29" stroke-width="10"/>
+    <path d="M8 52 H20" stroke-width="10"/>
+  </g>
+</svg>

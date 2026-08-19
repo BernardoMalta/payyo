@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0C0F0D">
 <meta property="og:title" content="Payyo — pagamento em lote via PIX">
 <meta property="og:description" content="O lote inteiro sai numa aprovação só.">
-<meta property="og:image" content="assets/logo-payyo.jpg">
+<meta property="og:image" content="assets/og.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="assets/favicon.png">
@@ -91,7 +91,7 @@ h2 {
 .top { border-bottom: 1px solid var(--rule); }
 .top .wrap { display: flex; align-items: center; gap: 30px; height: 64px; }
 .brand { display: flex; align-items: center; gap: 9px; margin-right: auto; }
-.brand img { width: 26px; height: 26px; }
+.brand .mk { width: 30px; color: var(--green); flex: none; }
 .brand .wm { font-family: var(--sans); font-weight: 700; font-size: 19px; letter-spacing: -.025em; }
 .brand .wm i { font-style: normal; color: var(--green); }
 .top nav { display: flex; gap: 26px; }
@@ -229,7 +229,7 @@ h2 {
 /* ─── RODAPÉ ───────────────────────────────────────────────── */
 .foot { padding: 30px 0 44px; }
 .foot .wrap { display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; }
-.foot .brand img { width: 24px; height: 24px; }
+.foot .brand .mk { width: 27px; }
 .foot .brand .wm { font-size: 17px; }
 .foot small { font-family: var(--mono); font-size: 11.5px; color: var(--tx-3); }
 
@@ -243,7 +243,12 @@ h2 {
 <header class="top">
   <div class="wrap">
     <a class="brand" href="#" aria-label="Payyo">
-      <img src="assets/favicon.png" alt="" width="26" height="26">
+      <svg class="mk" viewBox="0 0 96 84" fill="none" aria-hidden="true">
+        <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M40 12 H74 A12 12 0 0 1 74 36 H52 L30 72" stroke-width="13"/>
+          <path d="M25 28 H37" stroke-width="10"/><path d="M17 40 H29" stroke-width="10"/><path d="M8 52 H20" stroke-width="10"/>
+        </g>
+      </svg>
       <span class="wm">pay<i>yo</i></span>
     </a>
     <nav>
@@ -405,7 +410,12 @@ h2 {
 <footer class="foot">
   <div class="wrap">
     <span class="brand">
-      <img src="assets/favicon.png" alt="" width="24" height="24">
+      <svg class="mk" viewBox="0 0 96 84" fill="none" aria-hidden="true">
+        <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M40 12 H74 A12 12 0 0 1 74 36 H52 L30 72" stroke-width="13"/>
+          <path d="M25 28 H37" stroke-width="10"/><path d="M17 40 H29" stroke-width="10"/><path d="M8 52 H20" stroke-width="10"/>
+        </g>
+      </svg>
       <span class="wm">pay<i>yo</i></span>
     </span>
     <small>pagamento em lote via PIX</small>
